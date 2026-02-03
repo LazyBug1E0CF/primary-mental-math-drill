@@ -1,0 +1,1032 @@
+/* ==================== 基础样式 ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4a90d9;
+    --primary-hover: #357abd;
+    --danger-color: #e74c3c;
+    --success-color: #27ae60;
+    --border-color: #ddd;
+    --bg-light: #f5f5f5;
+    --bg-white: #fff;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --panel-width: 300px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* ==================== 主容器布局 ==================== */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* ==================== 试卷区域 ==================== */
+.paper-area {
+    flex: 1;
+    padding: 20px;
+    padding-left: calc(var(--panel-width) + 40px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: padding-left 0.3s ease;
+}
+
+.paper-area.panel-collapsed {
+    padding-left: 60px;
+}
+
+/* 试卷头部 */
+.paper-header {
+    width: 100%;
+    max-width: 210mm;
+    background: var(--bg-white);
+    padding: 20px 30px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+}
+
+.paper-header.hidden {
+    display: none;
+}
+
+/* 打印时可见模式：屏幕隐藏，打印时显示 */
+.paper-header.print-only {
+    display: none;
+}
+
+.paper-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.paper-info {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+}
+
+.info-line {
+    display: inline-block;
+    width: 80px;
+    border-bottom: 1px solid var(--text-primary);
+    margin-left: 5px;
+}
+
+/* 题目网格 */
+.questions-grid {
+    width: 100%;
+    max-width: 210mm;
+    background: var(--bg-white);
+    padding: 20px 30px 30px;
+    border: 1px solid var(--border-color);
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+    min-height: 270mm;
+}
+
+.questions-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.questions-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.questions-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.questions-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+/* 单个题目格子 */
+.question-cell {
+    min-height: 36px;
+    padding: 8px 10px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: #fafafa;
+    user-select: none;
+    position: relative;
+}
+
+.question-cell:hover {
+    border-color: var(--primary-color);
+    background: #f0f7ff;
+}
+
+.question-cell.empty {
+    color: #bbb;
+    font-size: 12px;
+    justify-content: center;
+}
+
+.question-cell.filled {
+    background: var(--bg-white);
+    border-style: solid;
+    border-color: #e0e0e0;
+}
+
+.question-cell.selected {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    background: #e8f4fc;
+}
+
+.question-cell.brushing {
+    background: #d4edda;
+    border-color: var(--success-color);
+    border-style: solid;
+    border-width: 2px;
+}
+
+.question-cell.erasing {
+    background: #f8d7da;
+    border-color: var(--danger-color);
+    border-style: solid;
+    border-width: 2px;
+}
+
+/* 禁止拖拽时的文字选中 */
+.questions-grid.dragging {
+    user-select: none;
+    cursor: crosshair;
+}
+
+.questions-grid.dragging .question-cell {
+    cursor: crosshair;
+}
+
+.question-cell .question-number {
+    position: absolute;
+    left: 4px;
+    top: 2px;
+    font-size: 10px;
+    color: #999;
+}
+
+.question-cell .question-text {
+    flex: 1;
+    text-align: center;
+}
+
+/* 答案显示（仅页面显示，打印时隐藏） */
+.question-cell .question-answer {
+    color: #27ae60;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: #333;
+    text-underline-offset: 2px;
+}
+
+/* 清除按钮 */
+.question-cell .clear-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    line-height: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+}
+
+.question-cell:hover .clear-btn {
+    opacity: 1;
+}
+
+.question-cell .clear-btn:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+/* 拖拽时隐藏清除按钮 */
+.questions-grid.dragging .clear-btn {
+    display: none;
+}
+
+/* ==================== 答案页 ==================== */
+.answer-page {
+    display: none;
+    width: 100%;
+    max-width: 210mm;
+    margin: 20px auto;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+}
+
+.answer-page .paper-header {
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.answers-grid {
+    padding: 20px 30px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.answers-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.answers-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.answers-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.answers-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+
+.answer-cell {
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+/* ==================== 左侧配置面板 ==================== */
+.config-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--panel-width);
+    height: 100vh;
+    background: var(--bg-white);
+    border-right: 1px solid var(--border-color);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+
+.config-panel.collapsed {
+    transform: translateX(calc(-100% + 30px));
+}
+
+.panel-toggle {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 60px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.panel-toggle:hover {
+    background: var(--bg-light);
+}
+
+.toggle-icon {
+    transition: transform 0.3s;
+    color: var(--text-secondary);
+}
+
+.config-panel.collapsed .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    padding-bottom: 70px; /* 为底部打印按钮留出空间 */
+}
+
+/* 面板底部固定区域 */
+.panel-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==================== Tab 切换样式 ==================== */
+.tab-buttons {
+    display: flex;
+    gap: 0;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ==================== 原有配置面板样式 ==================== */
+.panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* 工具选择器 */
+.tool-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tool-btn {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-white);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.tool-btn.active {
+    border-color: var(--primary-color);
+    background: #e8f4fc;
+    color: var(--primary-color);
+}
+
+.tool-icon {
+    font-size: 20px;
+}
+
+/* 配置区块 */
+.config-section {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.config-section:last-child {
+    border-bottom: none;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.config-group {
+    margin-bottom: 12px;
+}
+
+.config-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.config-sublabel {
+    display: block;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.config-select,
+.config-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    background: var(--bg-white);
+}
+
+.config-select:focus,
+.config-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.config-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.config-checkbox input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* 范围预设按钮 */
+.range-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.preset-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.preset-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.preset-btn .remove-preset {
+    margin-left: 5px;
+    color: #999;
+}
+
+.preset-btn .remove-preset:hover {
+    color: var(--danger-color);
+}
+
+/* 运算数个数按钮 */
+.operand-count-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.operand-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.operand-btn:hover {
+    border-color: var(--primary-color);
+}
+
+.operand-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* 运算符复选框 */
+.operator-checkboxes {
+    display: flex;
+    gap: 6px;
+}
+
+.operator-checkbox {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.operator-checkbox:hover {
+    border-color: var(--primary-color);
+}
+
+.operator-checkbox:has(input:checked) {
+    background: #e8f4fc;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.operator-checkbox input {
+    width: 14px;
+    height: 14px;
+    cursor: pointer;
+}
+
+/* 表达式构建器 */
+.expression-builder {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-light);
+    border-radius: 6px;
+}
+
+.expr-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.expr-label {
+    width: 50px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.expr-range {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.expr-range .range-input {
+    width: 50px;
+    padding: 4px 6px;
+    font-size: 13px;
+}
+
+.expr-range span {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.expr-ops {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+}
+
+.op-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.op-checkbox:hover {
+    border-color: var(--primary-color);
+}
+
+.op-checkbox:has(input:checked) {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.op-checkbox input {
+    display: none;
+}
+
+.op-checkbox span {
+    line-height: 1;
+}
+
+/* 范围输入 */
+.range-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.range-input {
+    width: 60px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.range-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* 按钮样式 */
+.btn-small {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-small:hover {
+    background: var(--bg-light);
+    border-color: var(--primary-color);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-white);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover:not(:disabled) {
+    background: var(--bg-light);
+    border-color: var(--primary-color);
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 预设列表 */
+.preset-list {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.preset-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.preset-item:hover {
+    background: var(--bg-light);
+    border-color: var(--primary-color);
+}
+
+.preset-item .preset-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.preset-item .preset-delete {
+    color: #999;
+    padding: 2px 5px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.preset-item .preset-delete:hover {
+    color: var(--danger-color);
+}
+
+/* 打印按钮 */
+.print-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.print-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* ==================== 模态对话框 ==================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-white);
+    padding: 25px;
+    border-radius: 10px;
+    min-width: 320px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 8px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modal-btn.cancel {
+    border: 1px solid var(--border-color);
+    background: var(--bg-white);
+}
+
+.modal-btn.cancel:hover {
+    background: var(--bg-light);
+}
+
+.modal-btn.confirm {
+    border: none;
+    background: var(--primary-color);
+    color: white;
+}
+
+.modal-btn.confirm:hover {
+    background: var(--primary-hover);
+}
+
+/* 编辑模态框配置 */
+.edit-config .config-group {
+    margin-bottom: 15px;
+}
+
+/* ==================== 打印样式 ==================== */
+@media print {
+    @page {
+        size: A4;
+        margin: 8mm;
+    }
+    
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .app-container {
+        display: block;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .config-panel,
+    .modal,
+    .panel-toggle,
+    .clear-btn {
+        display: none !important;
+    }
+    
+    /* 打印时答案显示为下划线 */
+    .question-answer {
+        color: transparent !important;
+        text-decoration: underline;
+        text-decoration-color: #333;
+        text-underline-offset: -2px;
+    }
+    
+    .paper-area {
+        padding: 0;
+        margin: 0;
+        display: block;
+    }
+    
+    /* 打印时头部信息缩小 */
+    .paper-header {
+        border: none;
+        padding: 2mm 0;
+        margin: 0;
+        max-width: none;
+    }
+    
+    .paper-header .paper-title {
+        font-size: 18px;
+        margin-bottom: 4px;
+    }
+    
+    .paper-header .paper-info {
+        gap: 6px;
+    }
+    
+    .paper-header .info-item {
+        font-size: 12px;
+    }
+    
+    .paper-header .info-line {
+        width: 60px;
+    }
+    
+    .paper-header.hidden {
+        display: none !important;
+    }
+    
+    /* 打印时可见模式：打印时显示 */
+    .paper-header.print-only {
+        display: block !important;
+    }
+    
+    .questions-grid {
+        border: none;
+        padding: 0;
+        max-width: none;
+        min-height: auto;
+        gap: 0;
+    }
+    
+    .question-cell {
+        border: none !important;
+        background: white;
+        padding: 0 6px;
+        height: var(--print-row-height, 22px);
+        min-height: auto;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .question-cell.empty {
+        visibility: hidden;
+    }
+    
+    .question-cell:hover {
+        background: white;
+        border: none !important;
+    }
+    
+    .question-cell.filled {
+        border: none !important;
+    }
+    
+    .answer-page {
+        display: block !important;
+        page-break-before: always;
+        border: none;
+        margin: 0;
+        max-width: none;
+    }
+    
+    .answer-page .paper-header {
+        border-bottom: 1px solid #333;
+    }
+    
+    .answers-grid {
+        padding: 5mm 0;
+        gap: 4px;
+    }
+    
+    .answer-cell {
+        font-size: 11px;
+    }
+}
+
+/* ==================== 响应式调整 ==================== */
+@media (max-width: 900px) {
+    :root {
+        --panel-width: 260px;
+    }
+}
+
+@media (max-width: 700px) {
+    .paper-area {
+        padding-left: 20px;
+    }
+    
+    .config-panel {
+        width: 100%;
+        transform: translateX(-100%);
+    }
+    
+    .config-panel.show-mobile {
+        transform: translateX(0);
+    }
+    
+    .panel-toggle {
+        right: -40px;
+        width: 40px;
+    }
+}

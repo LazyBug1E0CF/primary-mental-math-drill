@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学生口算题生成器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧配置面板 -->
+        <aside class="config-panel" id="configPanel">
+            <div class="panel-toggle" id="panelToggle">
+                <span class="toggle-icon">&#9654;</span>
+            </div>
+            
+            <div class="panel-content">
+                <!-- Tab 切换按钮 -->
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="brush">题刷配置</button>
+                    <button class="tab-btn" data-tab="paper">试卷设置</button>
+                </div>
+                
+                <!-- Tab 1: 题刷配置 -->
+                <div class="tab-content active" id="tabBrush">
+                    <!-- 工具选择 -->
+                    <div class="tool-selector">
+                        <button class="tool-btn active" data-tool="brush" id="brushTool">
+                            <span class="tool-icon">&#9998;</span>
+                            <span>题刷</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" id="eraserTool">
+                            <span class="tool-icon">&#9634;</span>
+                            <span>橡皮擦</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 题刷配置区 -->
+                    <div class="config-section" id="brushConfig">
+                        <!-- 运算数个数 -->
+                        <div class="config-group" id="operandCountGroup">
+                            <label class="config-label">运算数个数</label>
+                            <div class="operand-count-btns" id="operandCountBtns">
+                                <button class="operand-btn active" data-count="2">2个</button>
+                                <button class="operand-btn" data-count="3">3个</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 表达式结构配置 -->
+                        <div class="config-group">
+                            <label class="config-label">表达式结构</label>
+                            <div class="expression-builder" id="expressionBuilder">
+                                <!-- 数字1 -->
+                                <div class="expr-item expr-number">
+                                    <div class="expr-label">数字1</div>
+                                    <div class="expr-range">
+                                        <input type="number" class="range-input" id="num1Min" value="1" min="0" max="999">
+                                        <span>-</span>
+                                        <input type="number" class="range-input" id="num1Max" value="20" min="1" max="1000">
+                                    </div>
+                                </div>
+                                
+                                <!-- 运算符1 -->
+                                <div class="expr-item expr-operator">
+                                    <div class="expr-label">运算符1</div>
+                                    <div class="expr-ops" id="ops1">
+                                        <label class="op-checkbox" title="加法"><input type="checkbox" value="+" checked><span>+</span></label>
+                                        <label class="op-checkbox" title="减法"><input type="checkbox" value="-" checked><span>-</span></label>
+                                        <label class="op-checkbox" title="乘法"><input type="checkbox" value="×"><span>×</span></label>
+                                        <label class="op-checkbox" title="除法"><input type="checkbox" value="÷"><span>÷</span></label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 数字2 -->
+                                <div class="expr-item expr-number">
+                                    <div class="expr-label">数字2</div>
+                                    <div class="expr-range">
+                                        <input type="number" class="range-input" id="num2Min" value="1" min="0" max="999">
+                                        <span>-</span>
+                                        <input type="number" class="range-input" id="num2Max" value="20" min="1" max="1000">
+                                    </div>
+                                </div>
+                                
+                                <!-- 运算符2（3个运算数时显示） -->
+                                <div class="expr-item expr-operator" id="ops2Group" style="display:none;">
+                                    <div class="expr-label">运算符2</div>
+                                    <div class="expr-ops" id="ops2">
+                                        <label class="op-checkbox" title="加法"><input type="checkbox" value="+" checked><span>+</span></label>
+                                        <label class="op-checkbox" title="减法"><input type="checkbox" value="-" checked><span>-</span></label>
+                                        <label class="op-checkbox" title="乘法"><input type="checkbox" value="×"><span>×</span></label>
+                                        <label class="op-checkbox" title="除法"><input type="checkbox" value="÷"><span>÷</span></label>
+                                    </div>
+                                </div>
+                                
+                                <!-- 数字3（3个运算数时显示） -->
+                                <div class="expr-item expr-number" id="num3Group" style="display:none;">
+                                    <div class="expr-label">数字3</div>
+                                    <div class="expr-range">
+                                        <input type="number" class="range-input" id="num3Min" value="1" min="0" max="999">
+                                        <span>-</span>
+                                        <input type="number" class="range-input" id="num3Max" value="20" min="1" max="1000">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 括号设置（3个运算数时显示） -->
+                        <div class="config-group" id="bracketGroup" style="display:none;">
+                            <label class="config-checkbox">
+                                <input type="checkbox" id="useBracket">
+                                <span>使用括号</span>
+                            </label>
+                        </div>
+                        
+                        <!-- 题目格式 -->
+                        <div class="config-group">
+                            <label class="config-label">题目格式</label>
+                            <select id="questionFormat" class="config-select">
+                                <option value="standard">标准格式 (a+b=__)</option>
+                                <option value="fillblank">填空格式 (a+__=c)</option>
+                                <option value="mixed">混合格式</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 题刷预设 -->
+                    <div class="config-section">
+                        <div class="section-header">
+                            <label class="config-label">题刷预设</label>
+                            <button class="btn-small" id="saveBrushPreset">保存当前</button>
+                        </div>
+                        <div class="preset-list" id="brushPresetList">
+                            <!-- 预设列表由JS生成 -->
+                        </div>
+                    </div>
+                    
+                    <!-- 快捷操作 -->
+                    <div class="config-section">
+                        <label class="config-label">快捷操作</label>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="fillAllBtn">一键填充</button>
+                            <button class="action-btn" id="clearAllBtn">全部清空</button>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="action-btn" id="undoBtn" disabled>撤销</button>
+                            <button class="action-btn" id="redoBtn" disabled>重做</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: 试卷设置 -->
+                <div class="tab-content" id="tabPaper">
+                    <!-- 试卷设置 -->
+                    <div class="config-section">
+                        <label class="config-label">基本设置</label>
+                        <div class="config-group">
+                            <label class="config-sublabel">题目数量</label>
+                            <input type="number" id="questionCount" class="config-input" value="100" min="1" max="200">
+                        </div>
+                        <div class="config-group">
+                            <label class="config-sublabel">列数</label>
+                            <select id="columnCount" class="config-select">
+                                <option value="auto">自动</option>
+                                <option value="2">2列</option>
+                                <option value="3">3列</option>
+                                <option value="4">4列</option>
+                                <option value="5">5列</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label class="config-checkbox">
+                                <input type="checkbox" id="showNumbers">
+                                <span>显示题号</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- 头部信息设置 -->
+                    <div class="config-section">
+                        <label class="config-label">头部信息</label>
+                        <div class="config-group">
+                            <label class="config-sublabel">试卷标题</label>
+                            <input type="text" id="paperTitle" class="config-input" value="口算练习" placeholder="请输入标题">
+                        </div>
+                        <div class="config-group">
+                            <label class="config-sublabel">显示模式</label>
+                            <select id="headerMode" class="config-select">
+                                <option value="show">显示</option>
+                                <option value="print-only">隐藏（打印时可见）</option>
+                                <option value="hidden">隐藏</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- 试卷预设 -->
+                    <div class="config-section">
+                        <div class="section-header">
+                            <label class="config-label">试卷预设</label>
+                            <button class="btn-small" id="savePaperPreset">保存当前</button>
+                        </div>
+                        <div class="preset-list" id="paperPresetList">
+                            <!-- 预设列表由JS生成 -->
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <!-- 打印按钮（始终显示在底部） -->
+                <div class="panel-footer">
+                    <button class="print-btn" id="printBtn">打印试卷</button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主要试卷区域 -->
+        <main class="paper-area">
+            <!-- 试卷头部信息 -->
+            <header class="paper-header" id="paperHeader">
+                <h1 class="paper-title" id="paperTitleText">口算练习</h1>
+                <div class="paper-info">
+                    <div class="info-item">
+                        <span>姓名：</span>
+                        <span class="info-line"></span>
+                    </div>
+                    <div class="info-item">
+                        <span>日期：</span>
+                        <span class="info-line"></span>
+                    </div>
+                    <div class="info-item">
+                        <span>用时：</span>
+                        <span class="info-line"></span>
+                    </div>
+                    <div class="info-item">
+                        <span>得分：</span>
+                        <span class="info-line"></span>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- 题目网格区域 -->
+            <div class="questions-grid" id="questionsGrid">
+                <!-- 题目格子将由JS动态生成 -->
+            </div>
+        </main>
+        
+        <!-- 答案页（打印时显示） -->
+        <div class="answer-page" id="answerPage">
+            <header class="paper-header">
+                <h1 class="paper-title" id="answerTitleText">口算练习 - 答案</h1>
+            </header>
+            <div class="answers-grid" id="answersGrid"></div>
+        </div>
+        
+        <!-- 预设保存对话框 -->
+        <div class="modal" id="presetModal">
+            <div class="modal-content">
+                <h3 class="modal-title" id="modalTitle">保存预设</h3>
+                <input type="text" class="modal-input" id="presetName" placeholder="请输入预设名称">
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="modalCancel">取消</button>
+                    <button class="modal-btn confirm" id="modalConfirm">保存</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 编辑单题配置对话框 -->
+        <div class="modal" id="editModal">
+            <div class="modal-content">
+                <h3 class="modal-title">编辑题目配置</h3>
+                <div class="edit-config">
+                    <!-- 复用题刷配置，由JS填充 -->
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="editCancel">取消</button>
+                    <button class="modal-btn confirm" id="editConfirm">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
