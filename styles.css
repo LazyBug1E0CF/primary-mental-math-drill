@@ -54,7 +54,7 @@ body {
     max-width: 210mm;
     background: var(--bg-white);
     padding: 20px 30px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     border: 1px solid var(--border-color);
     border-bottom: none;
 }
@@ -106,7 +106,7 @@ body {
     padding: 20px 30px 30px;
     border: 1px solid var(--border-color);
     display: grid;
-    gap: 8px;
+    gap: 6px;
     grid-template-columns: repeat(4, 1fr);
     min-height: 270mm;
 }
@@ -118,8 +118,8 @@ body {
 
 /* 单个题目格子 */
 .question-cell {
-    min-height: 36px;
-    padding: 8px 10px;
+    height: 30px;
+    padding: 0 10px;
     border: 1px dashed #ccc;
     border-radius: 4px;
     display: flex;
@@ -140,7 +140,6 @@ body {
 
 .question-cell.empty {
     color: #bbb;
-    font-size: 12px;
     justify-content: center;
 }
 
