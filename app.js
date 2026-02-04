@@ -111,6 +111,7 @@ function initElements() {
     
     // 试卷设置
     elements.questionCount = document.getElementById('questionCount');
+    elements.questionCountOptions = document.getElementById('questionCountOptions');
     elements.columnCount = document.getElementById('columnCount');
     elements.showNumbers = document.getElementById('showNumbers');
     elements.paperTitle = document.getElementById('paperTitle');
@@ -296,6 +297,7 @@ function initEventListeners() {
     
     // 试卷设置变化
     elements.questionCount.addEventListener('change', onQuestionCountChange);
+    elements.questionCountOptions.addEventListener('click', onQuestionCountQuickSelect);
     elements.columnCount.addEventListener('change', renderGrid);
     elements.showNumbers.addEventListener('change', renderGrid);
     elements.paperTitle.addEventListener('input', onPaperTitleChange);
@@ -417,6 +419,9 @@ function onQuestionCountChange() {
         elements.questionCount.value = 120;
     }
     
+    // 更新快捷按钮状态
+    updateQuestionCountButtons(newCount);
+    
     const oldCount = state.questions.length;
     
     saveHistory();
@@ -430,6 +435,22 @@ function onQuestionCountChange() {
     }
     
     renderGrid();
+}
+
+function updateQuestionCountButtons(count) {
+    elements.questionCountOptions.querySelectorAll('.quick-btn').forEach(btn => {
+        btn.classList.toggle('active', parseInt(btn.dataset.value) === count);
+    });
+}
+
+function onQuestionCountQuickSelect(e) {
+    const btn = e.target.closest('.quick-btn');
+    if (!btn) return;
+    
+    const value = parseInt(btn.dataset.value);
+    elements.questionCount.value = value;
+    
+    onQuestionCountChange();
 }
 
 // ==================== 头部信息设置 ====================
