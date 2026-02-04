@@ -406,7 +406,17 @@ function onOperandCountChange() {
 }
 
 function onQuestionCountChange() {
-    const newCount = parseInt(elements.questionCount.value) || 100;
+    let newCount = parseInt(elements.questionCount.value) || 100;
+    
+    // 限制范围 60~120
+    if (newCount < 60) {
+        newCount = 60;
+        elements.questionCount.value = 60;
+    } else if (newCount > 120) {
+        newCount = 120;
+        elements.questionCount.value = 120;
+    }
+    
     const oldCount = state.questions.length;
     
     saveHistory();
