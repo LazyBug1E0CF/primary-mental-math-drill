@@ -189,16 +189,26 @@ body {
 
 .question-cell .question-text {
     flex: 1;
-    text-align: center;
+    text-align: left;
+    padding-left: 10px;
 }
 
 /* 答案显示（仅页面显示，打印时隐藏） */
 .question-cell .question-answer {
+    display: inline-block;
+    min-width: 2em;
+    text-align: center;
     color: #27ae60;
     font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: #333;
-    text-underline-offset: 2px;
+    border-bottom: 1px solid #333;
+}
+
+/* 填空下划线（统一宽度） */
+.question-cell .question-blank {
+    display: inline-block;
+    min-width: 2em;
+    text-align: center;
+    border-bottom: 1px solid #333;
 }
 
 /* 刷新按钮 */
@@ -964,9 +974,6 @@ body {
     /* 打印时答案显示为下划线 */
     .question-answer {
         color: transparent !important;
-        text-decoration: underline;
-        text-decoration-color: #333;
-        text-underline-offset: -2px;
     }
     
     .paper-area {
