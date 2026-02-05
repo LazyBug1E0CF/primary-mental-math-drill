@@ -201,6 +201,33 @@ body {
     text-underline-offset: 2px;
 }
 
+/* 刷新按钮 */
+.question-cell .refresh-btn {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+}
+
+.question-cell:hover .refresh-btn {
+    opacity: 1;
+}
+
+.question-cell .refresh-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
 /* 清除按钮 */
 .question-cell .clear-btn {
     position: absolute;
@@ -228,7 +255,8 @@ body {
     color: white;
 }
 
-/* 拖拽时隐藏清除按钮 */
+/* 拖拽时隐藏按钮 */
+.questions-grid.dragging .refresh-btn,
 .questions-grid.dragging .clear-btn {
     display: none;
 }
@@ -928,6 +956,7 @@ body {
     .config-panel,
     .modal,
     .panel-toggle,
+    .refresh-btn,
     .clear-btn {
         display: none !important;
     }

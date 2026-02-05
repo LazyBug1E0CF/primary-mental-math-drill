@@ -196,15 +196,44 @@ function renderGrid() {
         }
         cell.appendChild(textSpan);
         
-        // 已填充的格子添加清除按钮
+        // 已填充的格子添加刷新和清除按钮
         if (q.text) {
+            // 刷新按钮
+            const refreshBtn = document.createElement('span');
+            refreshBtn.className = 'refresh-btn';
+            refreshBtn.innerHTML = '&#8635;';
+            refreshBtn.title = '重新生成';
+            refreshBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const currentQ = state.questions[index];
+                saveHistory();
+                // 从去重集合中移除旧题目
+                state.generatedQuestions.delete(currentQ.text);
+                // 使用当前题刷配置重新生成（不使用格子旧配置，避免格式不兼容）
+                const config = brushConfig;
+                const generated = generateQuestion(config);
+                if (generated) {
+                    state.questions[index] = {
+                        config: JSON.parse(JSON.stringify(config)),
+                        text: generated.text,
+                        answer: generated.answer
+                    };
+                }
+                renderGrid();
+            });
+            cell.appendChild(refreshBtn);
+            
+            // 清除按钮
             const clearBtn = document.createElement('span');
             clearBtn.className = 'clear-btn';
             clearBtn.innerHTML = '&times;';
             clearBtn.title = '清除';
             clearBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                const currentQ = state.questions[index];
                 saveHistory();
+                // 从去重集合中移除
+                state.generatedQuestions.delete(currentQ.text);
                 state.questions[index] = { config: null, text: '', answer: '' };
                 renderGrid();
             });
@@ -480,8 +509,8 @@ function onGridMouseDown(e) {
     const cell = e.target.closest('.question-cell');
     if (!cell) return;
     
-    // 如果点击的是清除按钮，不开始拖拽
-    if (e.target.classList.contains('clear-btn')) {
+    // 如果点击的是刷新按钮或清除按钮，不开始拖拽
+    if (e.target.classList.contains('refresh-btn') || e.target.classList.contains('clear-btn')) {
         return;
     }
     
